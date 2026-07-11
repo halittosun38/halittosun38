@@ -6,9 +6,9 @@
 
 ### GitHub Istatistikleri (otomatik guncellenir)
 
-![stats](https://github-readme-stats.vercel.app/api?username=halittosun38&show_icons=true&hide_border=true&theme=tokyonight)
+![stats](https://github-profile-summary-cards.vercel.app/api/cards/stats?username=halittosun38&theme=tokyonight)
 ![streak](https://github-readme-streak-stats.herokuapp.com/?user=halittosun38&hide_border=true&theme=tokyonight)
-![top-langs](https://github-readme-stats.vercel.app/api/top-langs/?username=halittosun38&layout=compact&hide_border=true&theme=tokyonight)
+![top-langs](https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=halittosun38&theme=tokyonight)
 
 ### Baglantilar
 [![YouTube](https://img.shields.io/badge/YouTube-@Tosun0038-red?logo=youtube&logoColor=white)](https://youtube.com/@Tosun0038)
