@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """halittosun38 profil kartlarini statik SVG olarak uretir.
 GitHub Actions icinde calisir; ciktilar repoya commit edilir."""
-import json, os, html, urllib.request, collections
+import json, os, re, html, urllib.request, collections
 
 USER  = os.environ.get("GH_USER", "halittosun38")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
@@ -92,46 +92,40 @@ for name, cnt in top:
 card("Top Languages", rows, "langs.svg")
 
 # ---------- contributions / streak ----------
-def graphql(query, variables):
-    body = json.dumps({"query": query, "variables": variables}).encode()
-    req = urllib.request.Request("https://api.github.com/graphql", data=body, headers={
-        "Authorization": f"Bearer {TOKEN}",
-        "Content-Type": "application/json",
-        "User-Agent": USER})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.load(r)
+# Public katki takvimi; token gerektirmez, bu yuzden her zaman calisir.
+try:
+    req = urllib.request.Request(f"https://github.com/users/{USER}/contributions",
+                                 headers={"User-Agent": "Mozilla/5.0"})
+    doc = urllib.request.urlopen(req, timeout=30).read().decode()
 
-if TOKEN:
-    try:
-        q = """query($login:String!){ user(login:$login){ contributionsCollection{
-              contributionCalendar{ totalContributions weeks{ contributionDays{ date contributionCount }}}}}}"""
-        cal = graphql(q, {"login": USER})["data"]["user"]["contributionsCollection"]["contributionCalendar"]
-        days = [d for w in cal["weeks"] for d in w["contributionDays"]]
-        days.sort(key=lambda d: d["date"])
+    tds  = re.findall(r'data-date="(\d{4}-\d{2}-\d{2})"\s+id="(contribution-day-component-[\d-]+)"', doc)
+    tips = dict(re.findall(r'<tool-tip[^>]*for="(contribution-day-component-[\d-]+)"[^>]*>(.*?)</tool-tip>', doc, re.S))
 
-        longest = cur = run = 0
-        for d in days:
-            if d["contributionCount"] > 0:
-                run += 1
-                longest = max(longest, run)
-            else:
-                run = 0
-        # bugun katki yoksa dunden itibaren say (gun henuz bitmedi)
-        tail = days[:-1] if days and days[-1]["contributionCount"] == 0 else days
-        for d in reversed(tail):
-            if d["contributionCount"] > 0:
-                cur += 1
-            else:
-                break
+    days = []
+    for date, cid in tds:
+        m = re.match(r"(No|\d+)\s+contribution", html.unescape(tips.get(cid, "")).strip())
+        days.append((date, 0 if (not m or m.group(1) == "No") else int(m.group(1))))
+    days.sort()
+    if not days:
+        raise ValueError("takvim bos")
 
-        active = sum(1 for d in days if d["contributionCount"] > 0)
-        card("Contributions", [
-            ("Last Year",      cal["totalContributions"], None),
-            ("Current Streak", f"{cur} days",     None),
-            ("Longest Streak", f"{longest} days", None),
-            ("Active Days",    f"{active} / {len(days)}", None),
-        ], "streak.svg")
-    except Exception as e:
-        print("streak karti atlandi:", e)
-else:
-    print("token yok; streak karti atlandi")
+    total   = sum(n for _, n in days)
+    active  = sum(1 for _, n in days if n > 0)
+    longest = run = 0
+    for _, n in days:
+        run = run + 1 if n > 0 else 0
+        longest = max(longest, run)
+    # bugun henuz bitmedigi icin sifirsa dunden geriye say
+    tail, cur = (days[:-1] if days[-1][1] == 0 else days), 0
+    for _, n in reversed(tail):
+        if n > 0: cur += 1
+        else: break
+
+    card("Contributions", [
+        ("Last Year",      total,            None),
+        ("Current Streak", f"{cur} days",     None),
+        ("Longest Streak", f"{longest} days", None),
+        ("Active Days",    f"{active} / {len(days)}", None),
+    ], "streak.svg")
+except Exception as e:
+    print("streak karti atlandi:", e)
