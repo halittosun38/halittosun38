@@ -5,5 +5,5 @@
 <text x="24" y="92" xml:space="preserve"><tspan fill="#ffa657">Last Year</tspan><tspan fill="#8b949e"> ............. </tspan><tspan fill="#79c0ff">45</tspan></text>
 <text x="24" y="118" xml:space="preserve"><tspan fill="#ffa657">Current Streak</tspan><tspan fill="#8b949e"> ........ </tspan><tspan fill="#79c0ff">0 days</tspan></text>
 <text x="24" y="144" xml:space="preserve"><tspan fill="#ffa657">Longest Streak</tspan><tspan fill="#8b949e"> ........ </tspan><tspan fill="#79c0ff">2 days</tspan></text>
-<text x="24" y="170" xml:space="preserve"><tspan fill="#ffa657">Active Days</tspan><tspan fill="#8b949e"> ........... </tspan><tspan fill="#79c0ff">9 / 365</tspan></text>
+<text x="24" y="170" xml:space="preserve"><tspan fill="#ffa657">Active Days</tspan><tspan fill="#8b949e"> ........... </tspan><tspan fill="#79c0ff">9 / 366</tspan></text>
 </svg>
